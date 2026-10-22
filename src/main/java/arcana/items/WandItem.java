@@ -14,6 +14,7 @@ import arcana.cca_components.Researcher;
 import arcana.client.ArcanaClient;
 import arcana.items.components.ArcanaDataComponents;
 import arcana.items.components.WandDataComponent;
+import arcana.util.ArrayInventory;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.EnvType;
@@ -45,7 +46,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class WandItem extends Item implements FabricItem, WarpingItem, CustomCreativePresentationItem{
-	
+
+    public static int FOCI_SIZE = 4;
+
 	public WandItem(Item.Settings settings){
 		super(settings.component(ArcanaDataComponents.WAND_DATA, WandDataComponent.createDefault()));
 	}
@@ -292,9 +295,13 @@ public class WandItem extends Item implements FabricItem, WarpingItem, CustomCre
 			component.stored = map.underlying();
 		});
 	}
-	
+
+    public static ArrayInventory fociFrom(ItemStack stack){
+        return dataFrom(stack).foci;
+    }
+
 	public static void updateFocus(ItemStack wand, Consumer<ItemStack> updater){
-		WandDataComponent.run(wand, component -> updater.accept(component.focus));
+		WandDataComponent.run(wand, component -> updater.accept(component.getFocus()));
 	}
 	
 	public static Cap capFrom(ItemStack stack){
@@ -306,13 +313,21 @@ public class WandItem extends Item implements FabricItem, WarpingItem, CustomCre
 	}
 	
 	public static @NotNull ItemStack focusFrom(ItemStack stack){
-		return dataFrom(stack).focus;
+		return dataFrom(stack).getFocus();
 	}
 	
 	public static void putFocus(ItemStack wand, ItemStack focus){
-		WandDataComponent.run(wand, component -> component.focus = focus);
+		WandDataComponent.run(wand, component -> component.setFocus(focus));
 	}
-	
+
+    public static void cycleFocus(ItemStack wand, int i){
+        dataFrom(wand).cycleCurrentFocus(i);
+    }
+
+    public static ArrayInventory getFoci(ItemStack wand){
+        return dataFrom(wand).foci;
+    }
+
 	public static WandDataComponent dataFrom(ItemStack stack){
 		return stack.getOrDefault(ArcanaDataComponents.WAND_DATA, WandDataComponent.createDefault());
 	}

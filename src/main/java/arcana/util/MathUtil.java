@@ -94,4 +94,8 @@ public final class MathUtil{
 	public static Vec3d hoverPosition(LivingEntity entity, float delta){
 		return entity.getLerpedPos(delta).add(0, entity.getStandingEyeHeight(), 0).add(entity.getRotationVector(entity.getPitch(delta), entity.getYaw(delta)).multiply(1.3));
 	}
+
+    public static int posMod(int n, int mod){
+        return ((n % mod) + mod) % mod;
+    }
 }

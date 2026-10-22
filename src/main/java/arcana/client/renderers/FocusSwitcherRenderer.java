@@ -3,6 +3,7 @@ package arcana.client.renderers;
 import arcana.Arcana;
 import arcana.items.WandItem;
 import arcana.network.PkSwapFocus;
+import arcana.util.ArrayInventory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -45,27 +46,16 @@ public final class FocusSwitcherRenderer{
         Identifier focusSwitcherId = arcId("textures/gui/hud/focus_switcher_proto.png");
         ctx.drawTexture(focusSwitcherId, origin_x-96, origin_y-96, 0, 0, 192, 192, 256, 256);
 
-        List<StackReference> storage = new ArrayList<>();
-		List<StackReference> focusPouch = new ArrayList<>();
-		PkSwapFocus.gatherFoci(player, storage, focusPouch);
+        ArrayInventory foci = WandItem.getFoci(wandStack);
+        ItemStack currentFocus = WandItem.focusFrom(wandStack);
 
-        for(int i = 0; i < Math.min(storage.size(), 9); i++)
-            ctx.drawItem(storage.get(i).get(),
-                    (int)Math.floor(radius * Math.sin(i*(2f/9)*Math.PI)) + origin_x-8,
-                    -(int)Math.floor(radius * Math.cos(i*(2f/9)*Math.PI)) + origin_y-8);
+        ctx.drawItem(currentFocus, origin_x-8, origin_y-8);
 
-		int storageY = 30;
-		float introEase = Math.min(1, (openTicks + delta) / openAnimationTime);
-		introEase = 1 - (1 - introEase) * (1 - introEase) * (1 - introEase);
-		introEase = introEase > 0.98 ? 1 : introEase;
-		float spacing = introEase * 20;
-		if(!focusPouch.isEmpty()){
-			storageY += 20;
-			for(int i = 0; i < focusPouch.size(); i++)
-				ctx.drawItem(focusPouch.get(i).get(), (int)(i * spacing + 60 + 10*introEase), 30);
-		}
-		for(int i = 0; i < storage.size(); i++)
-			ctx.drawItem(storage.get(i).get(), (int)(i * spacing + 60 + 10*introEase), storageY);
+        for(int i = 0; i < 4; i++)
+            ctx.drawItem(foci.getStack(i),
+                    (int)Math.floor(radius * Math.sin(i*(2f/4)*Math.PI)) + origin_x-8,
+                    -(int)Math.floor(radius * Math.cos(i*(2f/4)*Math.PI)) + origin_y-8);
+
 	}
 	
 	public static void tick(MinecraftClient client){
@@ -90,14 +80,14 @@ public final class FocusSwitcherRenderer{
 			// TODO: scrolling
 			if(mc.options.useKey.wasPressed()){
 				mc.options.useKey.setPressed(false);
-				new PkSwapFocus(false).sendToServer();
-				PkSwapFocus.go(player, false, wandStack);
+				new PkSwapFocus(true).sendToServer();
+				PkSwapFocus.go(player, true, wandStack);
 			}
 			
 			if(mc.options.attackKey.wasPressed()){
 				mc.options.attackKey.setPressed(false);
-				new PkSwapFocus(true).sendToServer();
-				PkSwapFocus.go(player, true, wandStack);
+				new PkSwapFocus(false).sendToServer();
+				PkSwapFocus.go(player, false, wandStack);
 			}
 			
 			if(mc.options.sneakKey.wasPressed()){

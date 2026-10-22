@@ -43,25 +43,38 @@ public class PkSwapFocus extends C2SMessage{
 		List<StackReference> storage = new ArrayList<>();
 		List<StackReference> quickAccess = new ArrayList<>();
 		gatherFoci(player, storage, quickAccess);
-		if(!quickAccess.isEmpty()){
-			// TODO: focus pouch hotbar swapping
-		}else if(!storage.isEmpty()){
-			// TODO: and this is kind of silly
-			ItemStack old = WandItem.focusFrom(wandStack);
-			int last = storage.size() - 1;
-			if(fwd){
-				WandItem.putFocus(wandStack, storage.get(0).get());
-				for(int i = 0; i < last; i++)
-					storage.get(i).set(storage.get(i + 1).get());
-				storage.get(last).set(old);
-			}else{
-				WandItem.putFocus(wandStack, storage.get(last).get());
-				for(int i = last; i > 0; i--)
-					storage.get(i).set(storage.get(i - 1).get());
-				storage.get(0).set(old);
-			}
-		}
+        if(fwd){
+            WandItem.cycleFocus(wandStack, 1);
+        }else{
+            WandItem.cycleFocus(wandStack, -1);
+        }
 	}
+
+//    public static void go(PlayerEntity player, boolean fwd, ItemStack wandStack){
+//        List<StackReference> storage = new ArrayList<>();
+//        List<StackReference> quickAccess = new ArrayList<>();
+//        gatherFoci(player, storage, quickAccess);
+//        if(!quickAccess.isEmpty()){
+//            // TODO: focus pouch hotbar swapping
+//        }else if(!storage.isEmpty()){
+//            // TODO: and this is kind of silly
+//            ItemStack old = WandItem.focusFrom(wandStack);
+//            int last = storage.size() - 1;
+//            if(fwd){
+//                WandItem.cycleFocus(wandStack, 1);
+//                WandItem.putFocus(wandStack, storage.get(0).get());
+//                for(int i = 0; i < last; i++)
+//                    storage.get(i).set(storage.get(i + 1).get());
+//                storage.get(last).set(old);
+//            }else{
+//                WandItem.cycleFocus(wandStack, -1);
+//                WandItem.putFocus(wandStack, storage.get(last).get());
+//                for(int i = last; i > 0; i--)
+//                    storage.get(i).set(storage.get(i - 1).get());
+//                storage.get(0).set(old);
+//            }
+//        }
+//    }
 	
 	public static void gatherFoci(PlayerEntity player, List<StackReference> storage, List<StackReference> quickAccess){
 		PlayerInventory playerInv = player.getInventory();
